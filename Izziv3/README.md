@@ -1,0 +1,14 @@
+# Izris celovitega dvojiškega drevesa
+
+Napišite kratek program v javi, ki izriše celovito dvojiško drevo z n elementi. Velikost drevesa (število elementov) naj bo podana kot argument ob klicu. Izris drevesa naj bo mogoč z uporabo uporabo vseh štirih načinov obhoda (nivojski, premi, vmesni in obratni). Za izris drevesa uporabite primerno knjižnico grafičnih elementov (recimo StdDraw).
+
+## Določanje pozicij vozlišč
+Pri reševanju si predstavljajte, da drevo velikosti n rišemo na mrežo (širine n in višine log n). Za vsako vozlišče velja, da je izrisano na določenem položaju (x,y), pri čemer je njegov odmik po x osi določen z njegovim zaporednim mestom pri vmesnem izpisu, y odmik pa z nivojem vozlišča v drevesu. Položaje vseh vozlišč je treba določiti pred risanjem.  
+
+## Izris drevesa
+Izris drevesa je primerno izvesti v posebnem razredu. Za lažje risanje drevesa si je smiselno pripraviti metode, ki izrišejo določeno vozlišče (krogec s središčem (x,y)) ter povezavo med vozlišči. Po vzpostavitvi risalne površine se izris izvede z zaporednim izrisom (1) povezav do očeta in vozlišč ter nato še posameznih (2) vozlišč, seveda ob upoštevanju ustreznega zaporedja obiskov elementov drevesa. Vozlišča je mogoče obiskati na šriri načine (nivojski, premi, vmesi in obratni), vsakemu ustreza svoja metoda. 
+
+Za risanje priporočamo uporabo knjižnice StdDraw (R.Sedgewick, Princeton), ki jo lahko dobite na naslovu  http://introcs.cs.princeton.edu/java/stdlib/StdDraw.java
+
+## Testni razred
+V testnem razredu Izziv3 preko argumenta pridobite velikost drevesa, vzpostavite ustrezno veliko risalno površino ter sprožite izris drevesa.
