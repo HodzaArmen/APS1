@@ -63,17 +63,11 @@ public class Naloga2 {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        // Scanner scanner = new Scanner(new FileReader("a.txt"));
-        // String[] settings = scanner.nextLine().split("\\s+");
-        String[] settings = ("count bucket down").split(" ");
+        String[] settings = scanner.nextLine().split("\\s+");
         mode = settings[0];
         method = settings[1];
         String direction = settings[2];
-
-        // String[] inputNumbers = ("10 42 27 17 58 39 91 19 42 66").split(" ");
-        String[] inputNumbers = ("42 17 27 51 39").split(" ");
-        // String[] inputNumbers = ("42 17 27 51 39 11 90 42").split(" ");
-        // String[] inputNumbers = scanner.nextLine().split("\\s+");
+        String[] inputNumbers = scanner.nextLine().split("\\s+");
         scanner.close();
         ResizableArray numbers = new ResizableArray();
         for (String num : inputNumbers) {
@@ -174,6 +168,9 @@ public class Naloga2 {
     public static void print(int[] array, int index) {
         for (int i = 0; i < array.length; i++) {
             System.out.print(array[i] + " ");
+            if (method.equals("insert") && index == array.length && i == index - 1) {
+                System.out.print("| ");
+            }
             if (i == index - 1 && index != array.length) {
                 System.out.print("| ");
             }
@@ -188,12 +185,12 @@ public class Naloga2 {
     }
 
     private static void insertionSort(int[] array, boolean trace, boolean ascending) {
-        if (method == "insert") {
+        if (method.equals("insert")) {
             premiki = 0;
             primerjave = 0;
         }
         int temp, j;
-        if (trace && method == "insert")
+        if (trace == true && method.equals("insert"))
             print(array, 0);
         for (int i = 1; i < array.length; i++) {
             temp = array[i];
@@ -425,69 +422,72 @@ public class Naloga2 {
         System.out.println();
     }
 
-    private static void printQuick(int[] array, int levi, int desni, int index) {
-        for (int i = levi; i <= desni; i++) {
-            if (i == index) {
-                System.out.print("| ");
-            }
-            System.out.print(array[i] + " ");
-            if (i == index) {
-                System.out.print("| ");
+    private static void printQuick(int[] a, int pivotIndex, int left, int right) {
+        for (int i = left; i <= right; i++) {
+            if (i == pivotIndex) {
+                System.out.print("| " + a[i] + " | ");
+            } else {
+                System.out.print(a[i] + " ");
             }
         }
         System.out.println();
     }
 
-    private static void quickSort(int[] array, boolean trace, boolean ascending) {
-        premiki = 0;
+    public static void quickSort(int[] a, boolean trace, boolean ascending) {
         primerjave = 0;
+        premiki = 0;
         if (trace) {
-            print(array, 0);
+            print(a, 0);
         }
-        quickSortRek(array, 0, array.length - 1, trace, ascending);
+        quickSortRecursive(a, 0, a.length - 1, trace, ascending);
         if (trace) {
-            print(array, 0);
+            print(a, 0);
         }
     }
 
-    private static void quickSortRek(int[] array, int left, int right, boolean trace, boolean ascending) {
-        if (left >= right) {
+    private static void quickSortRecursive(int[] a, int left, int right, boolean trace, boolean ascending) {
+        if (left >= right)
             return;
-        }
-        int pivotIndex = porazdeljevanje(array, left, right, ascending);
+        int r = partition(a, left, right, ascending);
         if (trace) {
-            printQuick(array, left, right, pivotIndex);
+            printQuick(a, r, left, right);
         }
-        quickSortRek(array, left, pivotIndex - 1, trace, ascending);
-        quickSortRek(array, pivotIndex + 1, right, trace, ascending);
+        quickSortRecursive(a, left, r - 1, trace, ascending);
+        quickSortRecursive(a, r + 1, right, trace, ascending);
     }
 
-    private static int porazdeljevanje(int[] array, int left, int right, boolean ascending) {
-        int pivot = array[left]; // Pivot je prvi element
-        int l = left; // +1
-        int r = right;
+    private static int partition(int[] a, int left, int right, boolean ascending) {
+        int p = a[left];
+        int l = left;
+        int r = right + 1;
         while (true) {
-            primerjave++;
-            while ((ascending ? array[l] < pivot : array[l] > pivot) && l < right) {
-                l++;
-                primerjave++;
+            if (ascending) {
+                do {
+                    l++;
+                    primerjave++;
+                } while (l < right && a[l] < p);
+                do {
+                    r--;
+                    primerjave++;
+                } while (a[r] > p);
+            } else {
+                do {
+                    l++;
+                    primerjave++;
+                } while (l < right && a[l] > p);
+                do {
+                    r--;
+                    primerjave++;
+                } while (a[r] < p);
             }
-            primerjave++;
-            while ((ascending ? array[r] > pivot : array[r] < pivot) && r > left) {
-                r--;
-                primerjave++;
-            }
-            if (l >= r) {
-                swap(array, left, r);
-                premiki += 3;
-                return r;
-            }
-            swap(array, l, r);
+            if (l >= r)
+                break;
+            swap(a, l, r);
             premiki += 3;
-            l++;
-            r--;
         }
-
+        swap(a, left, r);
+        premiki += 4;
+        return r;
     }
 
     private static void radixSort(int[] array, boolean trace, boolean ascending) {
@@ -548,15 +548,16 @@ public class Naloga2 {
             print(array, 0);
         }
         int min = array[0], max = array[0];
-        for (int num : array) {
-            primerjave++;
-            if (num < min)
-                min = num;
-            primerjave++;
-            if (num > max)
-                max = num;
+        for (int i = 1; i < array.length; i++) {
+            primerjave += 2;
+            if (array[i] < min) {
+                primerjave--;
+                min = array[i];
+            } else if (array[i] > max) {
+                max = array[i];
+            }
         }
-        int k = array.length / 2;
+        int k = (int) Math.floor(array.length / 2);
         double v = (double) (max - min + 1) / k;
         ResizableArray[] buckets = new ResizableArray[k];
         for (int i = 0; i < k; i++) {
@@ -586,6 +587,7 @@ public class Naloga2 {
                 premiki++;
             }
         }
+        primerjave += array.length * 2;
         insertionSort(array, trace, ascending);
     }
 }
